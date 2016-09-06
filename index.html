@@ -4,7 +4,9 @@
     <meta charset="utf-8">
     <title>Reddit Clone</title>
     <link rel="stylesheet" href="css/main.css" charset="utf-8">
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 </head>
 <body>
     <div class="container-fluid" ng-controller="postController">
@@ -15,66 +17,80 @@
                 </div>
                 <div class="collapse navbar-collapse">
                     <ul class="nav navbar-nav navbar-left">
-                        <li><a href=""><span ng-click='showForm()'><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Submit Post</span></a></li>
+                        <li><a href=""><span ng-click='showPostForm()'><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Submit Post</span></a></li>
+                        <form class="navbar-form navbar-left">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Search">
+                            </div>
+                        </form>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">Sort By {{ view.currentSort }}<span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li ng-repeat="item in view.sortableList"><a href="#" ng-click="sortByItem(item)">Sort By {{ item }}</a></li>
+                            </ul>
+                        </li>
                     </ul>
-                    <form class="navbar-form navbar-left">
-                        <div class="form-group">
-                            <input type="text" class="form-control" placeholder="Search">
-                        </div>
-                    </form>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Sort By votes<span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="#">Action</a></li>
-                        </ul>
-                    </li>
                 </div>
             </nav>
         </div>
 
         <div class="row col-md-8 col-md-offset-1" ng-show="view.addpost">
-            <form name="postForm" ng-submit="submitForm(post)">
+            <form name="postForm" ng-submit="submitPost(newPost)">
                     <div class="form-group" ng-class="{'has-success': postForm.title.$valid, 'has-error': postForm.title.$invalid && postForm.title.$dirty}">
                         <label>Title</label>
-                        <input type="text" class="form-control" name="title" ng-model="post.title" ng-maxlength=100 ng-required="true">
+                        <input type="text" class="form-control" name="title" ng-model="newPost.title" ng-maxlength=100 ng-required="true">
                     </div>
                     <div class="form-group" ng-class="{'has-success': postForm.author.$valid, 'has-error': postForm.author.$invalid && postForm.author.$dirty}">
                         <label>Author</label>
-                        <input type="text" class="form-control" name="author" ng-model="post.author" ng-required="true">
+                        <input type="text" class="form-control" name="author" ng-model="newPost.author" ng-required="true">
                     </div>
                     <div class="form-group" ng-class="{'has-success': postForm.imageurl.$valid, 'has-error': postForm.imageurl.$invalid && postForm.imageurl.$dirty}">
                         <label>Image Url</label>
-                        <input type="url" class="form-control" name="imageurl" ng-model="post.imageurl" ng-required="true">
+                        <input type="url" class="form-control" name="imageurl" ng-model="newPost.imageurl" ng-required="true">
                         <p ng-show="postForm.imageurl.$invalid && postForm.imageurl.$dirty">Enter a valid image url.</p>
                     </div>
                     <div class="form-group" ng-class="{'has-success': postForm.description.$valid, 'has-error': postForm.description.$invalid && postForm.description.$dirty}">
                         <label>Description</label>
-                        <input type="text" class="form-control" name="description" ng-model="post.description" ng-maxlength=100 ng-required="true">
+                        <input type="text" class="form-control" name="description" ng-model="newPost.description" ng-maxlength=100 ng-required="true">
                         <p ng-show="postForm.title.$error.maxlength">Description is too long.</p>
                     </div>
                     <button type="submit" class="btn btn-default btn-primary">Submit Post</button>
-                    <button type="submit" class="btn btn-default btn-danger" ng-click="discardForm()">Discard</button>
+                    <button type="submit" class="btn btn-default btn-danger" ng-click="discardPost()">Discard</button>
                 </form>
         </div>
 
         <div class="row">
-            <div class="media post"  ng-repeat="post in view.posts">
+            <div class="media post"  ng-repeat="post in view.posts | orderBy: view.sortByItem">
                 <div class="media-left media-middle">
                     <img class="media-object" ng-src="{{ post.imgurl }}">
                 </div>
                 <div class="media-body">
                     <h4 class="media-heading">{{ post.title }} |
-                        <span class="glyphicon glyphicon-arrow-up" aria-hidden="true" ng-click="voteCount = voteCount + 1"></span>
-                        <span class="glyphicon glyphicon-arrow-down" aria-hidden="true" ng-click="voteCount = voteCount - 1"></span>
-                        <span ng-class="{'upvote': voteCount > 0, 'downvote': voteCount < 0}">{{ voteCount }}</span>
+                        <span class="glyphicon glyphicon-arrow-up" aria-hidden="true" ng-click="changeVote(post, 1)"></span>
+                        <span class="glyphicon glyphicon-arrow-down" aria-hidden="true" ng-click="changeVote(post, -1)"></span>
+                        <span ng-class="isUpVote(post)">{{ post.voteCount }}</span>
                     </h4>
                     <p class="author">By {{ post.author }}</p>
                     <p>{{ post.description }}</p>
                     <p>
                         <span><span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> {{ post.datePosted | date: 'EEEE, MMM d, yyyy' }} | </span>
-                        <span><span class="glyphicon glyphicon-comment" aria-hidden="true"></span> {{ post.numComments }} comments | </span>
-                        <span><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Add comment</span>
+                        <span ng-click="toggleCommentsVisibility(post)"><span class="glyphicon glyphicon-comment" aria-hidden="true"></span> {{ post.numComments }} comments | </span>
+                        <span ng-click="showCommentForm(post)"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Add comment</span>
                     </p>
+                    <div ng-show="post.commentsVisible">
+                        <p ng-repeat="comment in post.comments track by $index"> <strong>{{ comment.author }}</strong> - {{ comment.content }}</p>
+                    </div>
+                    <form class="form-inline" name="commentForm" ng-submit="submitNewComment(post, newComment)" ng-show="post.addcommentVisible">
+                        <div class="form-group">
+                            <label>Author</label>
+                            <input type="text" class="form-control" name="author" ng-model="newComment.author" ng-required="true">
+                        </div>
+                        <div class="form-group">
+                            <label>Text</label>
+                            <input type="text" class="form-control" name="content" ng-model="newComment.content" ng-required="true">
+                        </div>
+                        <button type="submit" class="btn btn-default">Add comment</button>
+                    </form>
                 </div>
             </div>
         </div>
