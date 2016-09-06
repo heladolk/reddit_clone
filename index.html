@@ -1,22 +1,88 @@
 <!DOCTYPE html>
 <html ng-app="redditApp">
-    <head>
-        <meta charset="utf-8">
-        <title>Reddit Clone</title>
-        <link rel="stylesheet" href="css/main.css" charset="utf-8">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-a    </head>
-    <body ng-controller="displayController">
-        <div class="postDiv" ng-repeat="post in view.posts">
-            <img ng-src="{{ post.img }}">
-            <h2>{{ post.title }}</h2>
-            <blockquote cite="By {{ post.author }}">
-                {{ post.description }}
-            </blockquote>
+<head>
+    <meta charset="utf-8">
+    <title>Reddit Clone</title>
+    <link rel="stylesheet" href="css/main.css" charset="utf-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container-fluid" ng-controller="postController">
+        <div class="row">
+            <nav class="navbar navbar-default">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">Reddit Clone</a>
+                </div>
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav navbar-left">
+                        <li><a href=""><span ng-click='showForm()'><span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Submit Post</span></a></li>
+                    </ul>
+                    <form class="navbar-form navbar-left">
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="Search">
+                        </div>
+                    </form>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Sort By votes<span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">Action</a></li>
+                        </ul>
+                    </li>
+                </div>
+            </nav>
         </div>
 
-        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.js"></script>
-        <script type="text/javascript" src="lib/bootstrap/ui-bootstrap-tpls-2.1.3.min.js"></script>
-        <script type="text/javascript" src='js/main.js'></script>
-    </body>
+        <div class="row col-md-8 col-md-offset-1" ng-show="view.addpost">
+            <form name="postForm" ng-submit="submitForm(post)">
+                    <div class="form-group" ng-class="{'has-success': postForm.title.$valid, 'has-error': postForm.title.$invalid && postForm.title.$dirty}">
+                        <label>Title</label>
+                        <input type="text" class="form-control" name="title" ng-model="post.title" ng-maxlength=100 ng-required="true">
+                    </div>
+                    <div class="form-group" ng-class="{'has-success': postForm.author.$valid, 'has-error': postForm.author.$invalid && postForm.author.$dirty}">
+                        <label>Author</label>
+                        <input type="text" class="form-control" name="author" ng-model="post.author" ng-required="true">
+                    </div>
+                    <div class="form-group" ng-class="{'has-success': postForm.imageurl.$valid, 'has-error': postForm.imageurl.$invalid && postForm.imageurl.$dirty}">
+                        <label>Image Url</label>
+                        <input type="url" class="form-control" name="imageurl" ng-model="post.imageurl" ng-required="true">
+                        <p ng-show="postForm.imageurl.$invalid && postForm.imageurl.$dirty">Enter a valid image url.</p>
+                    </div>
+                    <div class="form-group" ng-class="{'has-success': postForm.description.$valid, 'has-error': postForm.description.$invalid && postForm.description.$dirty}">
+                        <label>Description</label>
+                        <input type="text" class="form-control" name="description" ng-model="post.description" ng-maxlength=100 ng-required="true">
+                        <p ng-show="postForm.title.$error.maxlength">Description is too long.</p>
+                    </div>
+                    <button type="submit" class="btn btn-default btn-primary">Submit Post</button>
+                    <button type="submit" class="btn btn-default btn-danger" ng-click="discardForm()">Discard</button>
+                </form>
+        </div>
+
+        <div class="row">
+            <div class="media post"  ng-repeat="post in view.posts">
+                <div class="media-left media-middle">
+                    <img class="media-object" ng-src="{{ post.imgurl }}">
+                </div>
+                <div class="media-body">
+                    <h4 class="media-heading">{{ post.title }} |
+                        <span class="glyphicon glyphicon-arrow-up" aria-hidden="true" ng-click="voteCount = voteCount + 1"></span>
+                        <span class="glyphicon glyphicon-arrow-down" aria-hidden="true" ng-click="voteCount = voteCount - 1"></span>
+                        <span ng-class="{'upvote': voteCount > 0, 'downvote': voteCount < 0}">{{ voteCount }}</span>
+                    </h4>
+                    <p class="author">By {{ post.author }}</p>
+                    <p>{{ post.description }}</p>
+                    <p>
+                        <span><span class="glyphicon glyphicon-calendar" aria-hidden="true"></span> {{ post.datePosted | date: 'EEEE, MMM d, yyyy' }} | </span>
+                        <span><span class="glyphicon glyphicon-comment" aria-hidden="true"></span> {{ post.numComments }} comments | </span>
+                        <span><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Add comment</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.js"></script>
+    <script type="text/javascript" src="lib/bootstrap/ui-bootstrap-tpls-2.1.3.min.js"></script>
+    <script type="text/javascript" src='js/main.js'></script>
+</body>
 </html>
