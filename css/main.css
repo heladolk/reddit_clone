@@ -8,6 +8,29 @@
     align: auto;
 }
 
+.post.ng-enter {
+  transition:1s ease all;
+  opacity:0;
+  transform: translateX(100%);
+}
+
+.post.ng-enter.ng-enter-active {
+  opacity:1;
+  transition:1s ease all;
+  transform: translateX(0);
+}
+
+.post.ng-leave {
+  transition:1s ease all;
+  opacity:1;
+  transform: translateX(0);
+}
+
+.post.ng-leave.ng-leave-active {
+  opacity:0;
+  transform: translateX(100%);
+}
+
 .author {
     text-align: right;
 }

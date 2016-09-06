@@ -1,7 +1,7 @@
 "use strict";
 
 // let app = angular.module('redditApp', ['ui.bootstrap']);
-let app = angular.module('redditApp', []);
+let app = angular.module('redditApp', ['ngAnimate']);
 
 app.controller('postController', function($scope) {
     $scope.view = {};
@@ -24,22 +24,13 @@ app.controller('postController', function($scope) {
         post.voteCount = 0;
         post.numComments = 0;
         post.comments = [];
-        post.datePosted = Date.now();
+        post.datePosted = moment().calendar();
 
         $scope.view.posts.push(post);
         $scope.view.addpost = false;
         $scope.newPost = {};
         $scope.postForm.$setPristine();
     };
-
-    /*
-        Search Feature
-    */
-
-
-
-
-
 
     /*
         Sort Feature
@@ -104,7 +95,7 @@ app.controller('postController', function($scope) {
         description: "Thinking that movie nights and pizza are a natural fit, Pizza Hut created a new cardboard pizza box that turns into a working movie projector powered by your smartphone. It's called the Blockbuster Box, and it was designed by Ogilvy Hong Kong for a Pizza Hut marketing stunt, according to The Verge.",
         voteCount: 7,
         comments: [ {author: 'chul', content: 'handsome'}, {author: 'yj', content: 'pretty'}],
-        datePosted: '09/04/16',
+        datePosted: moment().subtract(2, 'days').subtract(1, 'hours').calendar(),
         commentsVisible: false,
         addcommentVisible: false
     },
@@ -115,7 +106,7 @@ app.controller('postController', function($scope) {
         description: "Silicon Valley has a major housing crisis. The median price of a home in Palo Alto, home to Stanford University, has reached $2.5 million — twice as much as five years ago. Housing in the region has grown so expensive that it’s hard for young families to get their start there.",
         voteCount: 5,
         comments: [],
-        datePosted: '09/02/16',
+        datePosted: moment("20160131","YYYYMMDD").fromNow(),
         commentsVisible: false,
         addcommentVisible: false
     },
@@ -126,7 +117,7 @@ app.controller('postController', function($scope) {
         description: "Norway's state church has lost more than 25,000 members in a month after it launched an online registration system allowing people to sign up or opt out. The Lutheran Church is the official religion in Norway and nearly three-quarters of the population are registered as members. However, since launching a website on 12 August to update its heavily criticised records and offer people an easy way to join or leave, 25,743 members have left the church, 24,653 of those through the site.",
         voteCount: 0,
         comments: [],
-        datePosted: '08/31/16',
+        datePosted: moment().subtract(1, 'days').calendar(),
         commentsVisible: false,
         addcommentVisible: false
     }];
