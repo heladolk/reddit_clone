@@ -8,6 +8,9 @@ app.controller('postController', function($scope) {
     $scope.newPost = {};
     $scope.newComment = {};
 
+    /*
+        Post Feature
+    */
     $scope.view.addpost = false;
     $scope.showPostForm = function() {
         $scope.view.addpost = !$scope.view.addpost;
@@ -29,6 +32,29 @@ app.controller('postController', function($scope) {
         $scope.postForm.$setPristine();
     };
 
+    /*
+        Search Feature
+    */
+
+
+
+
+
+
+    /*
+        Sort Feature
+    */
+    $scope.view.sortableList = ['title', 'voteCount', 'datePosted'];
+    $scope.view.currentSort = $scope.view.sortableList[0];
+    $scope.view.sortByItem = 'title';
+    $scope.sortByItem = function(item) {
+        $scope.view.currentSort = item;
+        $scope.view.sortByItem = item === 'title' ? 'title' : '-' + item;
+    };
+
+    /*
+        Vote Feature
+    */
     $scope.changeVote = function(post, val) {
         if(val == 1) {
             post.voteCount += 1;
@@ -47,15 +73,9 @@ app.controller('postController', function($scope) {
         }
     };
 
-
-    $scope.view.sortableList = ['title', 'voteCount', 'datePosted'];
-    $scope.view.currentSort = $scope.view.sortableList[0];
-    $scope.view.sortByItem = 'title';
-    $scope.sortByItem = function(item) {
-        $scope.view.currentSort = item;
-        $scope.view.sortByItem = item === 'title' ? 'title' : '-' + item;
-    }
-
+    /*
+        Comment Feature
+    */
     $scope.toggleCommentsVisibility = function(post) {
         if(post.numComments === 0) {
             return;
@@ -75,6 +95,9 @@ app.controller('postController', function($scope) {
         $scope.commentForm.$setPristine();
     };
 
+    /*
+        Data - Posts
+    */
     $scope.view.posts = [{
         title: 'Pizza Hut has a new box',
         author: 'Steven Tweedie',
